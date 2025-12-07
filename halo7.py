@@ -1,5 +1,8 @@
 
 from pygame import *
+from pantallas.my_app import MiClaseDeMenu
+
+
 
 
 #clase padre para otros sprites
