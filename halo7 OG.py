@@ -1,8 +1,7 @@
 
 from pygame import *
-
 #from pantallas.my_app import MiClaseDeMenu
-mixer.init()
+
 
 
 
@@ -28,21 +27,16 @@ class GameSprite(sprite.Sprite):
 # clase del jugador principal
 class Player(GameSprite):
  # el método en el cual el sprite es controlado por las teclas de flechas del teclado
- def __init__(
-     self, player_image, walk, walkcount, player_x, player_y, size_x, size_y, player_x_speed, player_y_speed):
+ def __init__(self, player_image, player_x, player_y, size_x, size_y, player_x_speed, player_y_speed):
      # Llamada al constructor de la clase (Sprite):
-     GameSprite.__init__(self, player_image, player_x, player_y, size_x, size_y)
-     self.walk = walk
-     self.walkcount = walkcount
-     self.size_x = size_x
-     self.size_y = size_y
+     GameSprite.__init__(self, player_image, player_x, player_y,size_x, size_y)
+
+
      self.x_speed = player_x_speed
      self.y_speed = player_y_speed
 
 
- def update(self, win):
-      if self.walkcount + 1 >= 80:
-          self.walkcount = 0
+ def update(self):
       ''' mueve al personaje aplicando la velocidad actual en las direcciones horizontal y vertical'''
       # primero el movimiento horizontal
       if packman.rect.x <= win_width-80 and packman.x_speed > 0 or packman.rect.x >= 0 and packman.x_speed < 0:
@@ -68,15 +62,9 @@ class Player(GameSprite):
       elif self.y_speed < 0: # yendo hacia arriba
           for p in platforms_touched:
               self.y_speed = 0 # la velocidad vertical se amortigua al chocar con la pared
-              self.rect.top = max(self.rect.top, p.rect.bottom)    
-      if self.y_speed != 0 or self.x_speed != 0:
-          self.image = transform.scale(self.walk[int(self.walkcount%8)], (self.size_x, self.size_y))
-          self.walkcount += 0.8
+              self.rect.top = max(self.rect.top, p.rect.bottom) # alineando el borde superior contra los bordes inferiores de las paredes que se tocaron
  # el método "fire" (usamos la ubicación del jugador para crear una bala allí)
  def fire(self):
-     sound = mixer.Sound("laser-gun-81720.mp3")
-     sound.set_volume(0.3)
-     sound.play()
      bullet = Bullet('bala.png', self.rect.right, self.rect.centery, 60, 35, 55)
      hero_bullets.add(bullet)
 
@@ -153,11 +141,10 @@ w1 = GameSprite('estructura.png',-100, 450, 850, 60)
 # añadiendo paredes al grupo
 barriers.add(w1)
 
-walk = [
-    image.load('frame1.png'), image.load('frame2.png'), image.load('frame3.png'),image.load('frame4.png'), image.load('frame5.png'), image.load('frame6.png'), image.load('frame7.png'), image.load('frame8.png')]
+
 
 # crear sprites
-packman = Player('frame1.png', walk, 0, 46, 370, 80, 80, 0, 0)
+packman = Player('spartan.png', 46, 370, 80, 80, 0, 0)
 final_sprite = GameSprite('fin.png', win_width - 85, win_height - 100, 80, 80)
 
 
@@ -177,8 +164,7 @@ monsters.add(monster4)
 finish = False
 
 
-mixer.music.load("Take a no. 5 and a no. 3.mp3")
-mixer.music.play(loops=-1)
+
 # ciclo del juego
 run = True
 ultimo_disparo = 0
@@ -214,14 +200,13 @@ while run:
               packman.y_speed = 0
 
 
-
 # comprobar que el juego todavía no haya finalizado
  if not finish:
      # actualizar el fondo cada iteración
      window.blit(img, (0, 0)) # rellenar la ventana con color
     
      # lanzar los movimientos de sprites
-     packman.update(window)
+     packman.update()
      hero_bullets.update()
      enemy_bullets.update()
 
@@ -247,8 +232,6 @@ while run:
      if sprite.spritecollide(packman, enemy_bullets, True):
         finish = True
         img = image.load('derrota.png')
-        mixer.music.load("Capricho corso.mp3")
-        mixer.music.play(loops=-1)
         d = img.get_width() // img.get_height()
         window.fill((255, 255, 255))
         window.blit(transform.scale(img, (win_height * d, win_height)), (90, 0))
@@ -256,8 +239,6 @@ while run:
          finish = True
          # calcular la relación de aspecto
          img = image.load('derrota.png')
-         mixer.music.load("Capricho corso.mp3")
-         mixer.music.play(loops=-1)
          d = img.get_width() // img.get_height()
          window.fill((255, 255, 255))
          window.blit(transform.scale(img, (win_height * d, win_height)), (90, 0))
@@ -266,8 +247,6 @@ while run:
      if sprite.collide_rect(packman, final_sprite):
          finish = True
          img = image.load('victoria.png')
-         mixer.music.load("Capricho corso.mp3")
-         mixer.music.play(loops=-1)
          window.fill((255, 255, 255))
          window.blit(transform.scale(img, (win_width, win_height)), (0, 0))
      tiempo_transcurrido = time.get_ticks()
@@ -277,4 +256,5 @@ while run:
         if monster2.alive():
             monster2.enemyfire()
         ultimo_disparo = tiempo_transcurrido
+
  display.update()
