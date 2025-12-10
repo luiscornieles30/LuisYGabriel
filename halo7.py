@@ -233,7 +233,7 @@ while run:
                 time.delay(1500)
 
                 import os
-                os.system('python halo7l2.py')  # EJECUTA el siguiente nivel
+                os.system('python halo7l2.py')
 
                 run = False
 
