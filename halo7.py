@@ -160,8 +160,10 @@ while run:
 
             elif e.key == K_ESCAPE:  
                 if pausa == False:
+                    mixer.music.pause()
                     pausa = True
                 else: 
+                    mixer.music.unpause()
                     pausa = False
 
         elif e.type == KEYUP:
