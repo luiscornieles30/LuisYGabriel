@@ -1,5 +1,5 @@
 from pygame import *
-# from my_app import *
+from my_app import *
 mixer.init()
 
 #clase padre para otros sprites
@@ -162,6 +162,8 @@ while run:
                 if pausa == False:
                     mixer.music.pause()
                     pausa = True
+                    pausaa = VentanaPausa()
+                    ventana.exec_()
                 else: 
                     mixer.music.unpause()
                     pausa = False
