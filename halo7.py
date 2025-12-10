@@ -1,5 +1,13 @@
 from pygame import *
-from my_app import *
+from xd import *
+from PyQt5.QtWidgets import QApplication
+import sys
+mixer.init()
+
+app_qt = QApplication(sys.argv)
+
+
+
 mixer.init()
 
 #clase padre para otros sprites
@@ -163,7 +171,7 @@ while run:
                     mixer.music.pause()
                     pausa = True
                     pausaa = VentanaPausa()
-                    ventana.exec_()
+                    pausaa.exec_()
                 else: 
                     mixer.music.unpause()
                     pausa = False
