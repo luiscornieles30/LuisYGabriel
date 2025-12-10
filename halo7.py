@@ -1,6 +1,6 @@
 from pygame import *
 # from my_app import *
-
+mixer.init()
 
 #clase padre para otros sprites
 class GameSprite(sprite.Sprite):
@@ -16,38 +16,50 @@ class GameSprite(sprite.Sprite):
 
 
 class Player(GameSprite):
-    def __init__(self, player_image, player_x, player_y, size_x, size_y, player_x_speed, player_y_speed):
-        GameSprite.__init__(self, player_image, player_x, player_y, size_x, size_y)
-        self.x_speed = player_x_speed
-        self.y_speed = player_y_speed
+ def __init__(
+     self, player_image, walk, walkcount, player_x, player_y, size_x, size_y, player_x_speed, player_y_speed):
+     GameSprite.__init__(self, player_image, player_x, player_y, size_x, size_y)
+     self.walk = walk
+     self.walkcount = walkcount
+     self.size_x = size_x
+     self.size_y = size_y
+     self.x_speed = player_x_speed
+     self.y_speed = player_y_speed
 
-    def update(self):
-        if packman.rect.x <= win_width-80 and packman.x_speed > 0 or packman.rect.x >= 0 and packman.x_speed < 0:
-            self.rect.x += self.x_speed
-        platforms_touched = sprite.spritecollide(self, barriers, False)
-        if self.x_speed > 0:
-            for p in platforms_touched:
-                self.rect.right = min(self.rect.right, p.rect.left)
-        elif self.x_speed < 0:
-            for p in platforms_touched:
-                self.rect.left = max(self.rect.left, p.rect.right)
 
-        if packman.rect.y <= win_height-80 and packman.y_speed > 0 or packman.rect.y >= 0 and packman.y_speed < 0:
-            self.rect.y += self.y_speed
-        platforms_touched = sprite.spritecollide(self, barriers, False)
-        if self.y_speed > 0:
-            for p in platforms_touched:
-                self.y_speed = 0
-                if p.rect.top < self.rect.bottom:
-                    self.rect.bottom = p.rect.top
-        elif self.y_speed < 0:
-            for p in platforms_touched:
-                self.y_speed = 0
-                self.rect.top = max(self.rect.top, p.rect.bottom)
-
-    def fire(self):
-        bullet = Bullet('bala.png', self.rect.right, self.rect.centery, 60, 35, 55)
-        hero_bullets.add(bullet)
+ def update(self, win):
+      if self.walkcount + 1 >= 80:
+          self.walkcount = 0
+      if packman.rect.x <= win_width-80 and packman.x_speed > 0 or packman.rect.x >= 0 and packman.x_speed < 0:
+        self.rect.x += self.x_speed
+      platforms_touched = sprite.spritecollide(self, barriers, False)
+      if self.x_speed > 0:
+          for p in platforms_touched:
+              self.rect.right = min(self.rect.right, p.rect.left)
+      elif self.x_speed < 0:
+          for p in platforms_touched:
+              self.rect.left = max(self.rect.left, p.rect.right)
+      if packman.rect.y <= win_height-80 and packman.y_speed > 0 or packman.rect.y >= 0 and packman.y_speed < 0:
+        self.rect.y += self.y_speed
+      platforms_touched = sprite.spritecollide(self, barriers, False)
+      if self.y_speed > 0:
+          for p in platforms_touched:
+              self.y_speed = 0
+              if p.rect.top < self.rect.bottom:
+                  self.rect.bottom = p.rect.top
+      elif self.y_speed < 0:
+          for p in platforms_touched:
+              self.y_speed = 0
+              self.rect.top = max(self.rect.top, p.rect.bottom)    
+      if self.y_speed != 0 or self.x_speed != 0:
+          self.image = transform.scale(self.walk[int(self.walkcount%8)], (self.size_x, self.size_y))
+          self.walkcount += 0.8
+ def fire(self):
+     sound = mixer.Sound("laser-gun-81720.mp3")
+     sound.set_volume(0.3)
+     sound.play()
+     bullet = Bullet('bala.png', self.rect.right, self.rect.centery, 60, 35, 55)
+     hero_bullets.add(bullet)
 
 
 class Enemy(GameSprite):
@@ -101,7 +113,10 @@ monsters = sprite.Group()
 w1 = GameSprite('estructura.png', -100, 450, 850, 60)
 barriers.add(w1)
 
-packman = Player('spartan.png', 46, 370, 80, 80, 0, 0)
+walk = [
+    image.load('frame1.png'), image.load('frame2.png'), image.load('frame3.png'),image.load('frame4.png'), image.load('frame5.png'), image.load('frame6.png'), image.load('frame7.png'), image.load('frame8.png')]
+
+packman = Player('frame1.png', walk, 0, 46, 370, 80, 80, 0, 0)
 final_sprite = GameSprite('fin.png', win_width - 85, win_height - 100, 80, 80)
 
 monster1 = Enemy('sangeilii.png', win_width - 80, 40, 80, 80, 5)
@@ -117,6 +132,9 @@ monsters.add(monster4)
 finish = False
 pausa = False  
 
+
+mixer.music.load("Take a no. 5 and a no. 3.mp3")
+mixer.music.play(loops=-1)
 run = True
 ultimo_disparo = 0
 delay_para_disparar = 2000
@@ -162,7 +180,7 @@ while run:
 
             window.blit(img, (0, 0))
 
-            packman.update()
+            packman.update(window)
             hero_bullets.update()
             enemy_bullets.update()
 
@@ -182,12 +200,16 @@ while run:
                 finish = True
                 img = image.load('derrota.png')
                 d = img.get_width() // img.get_height()
+                mixer.music.load("Capricho corso.mp3")
+                mixer.music.play(loops=-1)
                 window.fill((255, 255, 255))
                 window.blit(transform.scale(img, (win_height * d, win_height)), (90, 0))
 
             if sprite.spritecollide(packman, monsters, False):
                 finish = True
                 img = image.load('derrota.png')
+                mixer.music.load("Capricho corso.mp3")
+                mixer.music.play(loops=-1)
                 d = img.get_width() // img.get_height()
                 window.fill((255, 255, 255))
                 window.blit(transform.scale(img, (win_height * d, win_height)), (90, 0))
@@ -195,6 +217,8 @@ while run:
             if sprite.collide_rect(packman, final_sprite):
                 finish = True
                 img = image.load('victoria.png')
+                mixer.music.load("Capricho corso.mp3")
+                mixer.music.play(loops=-1)
                 window.fill((255, 255, 255))
                 window.blit(transform.scale(img, (win_width, win_height)), (0, 0))
 
