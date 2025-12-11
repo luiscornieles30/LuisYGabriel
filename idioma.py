@@ -2,7 +2,6 @@ from PyQt5.QtWidgets import QDialog, QPushButton, QVBoxLayout
 
 
 
-
 class VentanaPausa(QDialog):
     def __init__(self):
         super().__init__()
@@ -24,9 +23,5 @@ class VentanaPausa(QDialog):
 
         boton_continuar.clicked.connect(self.accept)
         boton_idioma.clicked.connect(self.accept)
-        boton_volumen.clicked.connect(self.abrir_volumen)  # Abre ventana de volumen
+        boton_volumen.clicked.connect(self.accept)
         boton_salir.clicked.connect(self.reject)
-
-    def abrir_volumen(self):
-        ventana = VentanaVolumen()
-        ventana.exec_()   # Abre la ventana de volumen y espera a que se cierre

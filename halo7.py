@@ -172,11 +172,23 @@ while run:
                 if pausa == False:
                     mixer.music.pause()
                     pausa = True
+
                     pausaa = VentanaPausa()
                     pausaa.exec_()
+
+                    if pausaa.opcion == "continuar":
+                        pausa = False
+                        mixer.music.unpause()
+
+                    elif pausaa.opcion == "salir":
+                        run = False
+                        pygame.quit()
+                        exit()
+
                 else: 
                     mixer.music.unpause()
                     pausa = False
+
 
         elif e.type == KEYUP:
             if e.key == K_LEFT:
@@ -230,12 +242,6 @@ while run:
 
             if sprite.collide_rect(packman, final_sprite):
                 display.update()
-                time.delay(1500)
-
-                import os
-                os.system('python halo7l2.py')
-
-                run = False
 
 
             tiempo_transcurrido = time.get_ticks()
