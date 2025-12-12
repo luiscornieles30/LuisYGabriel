@@ -1,0 +1,17 @@
+git init
+
+git add .
+ 
+git commit -m "prueba"
+
+git push origin master
+
+ANTE EL ERROR
+
+git add .
+
+git commit -m "sincronizar"
+
+git pull origin master --allow-unrelated-histories
+
+git push origin master
