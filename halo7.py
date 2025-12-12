@@ -111,7 +111,7 @@ window = display.set_mode((win_width, win_height))
 icon = image.load('alfin.bmp')
 display.set_icon(icon)
 
-img = image.load('anillo.jpg')
+img = image.load('fondo.png')
 window.blit(transform.scale(img, (win_width, win_height)), (0, 0))
 
 barriers = sprite.Group()
@@ -128,10 +128,10 @@ walk = [
 packman = Player('frame1.png', walk, 0, 46, 370, 80, 80, 0, 0)
 final_sprite = GameSprite('fin.png', win_width - 85, win_height - 100, 80, 80)
 
-monster1 = Enemy('sangeilii.png', win_width - 80, 40, 80, 80, 5)
-monster2 = Enemy('sangeilii.png', win_width - 80, 400, 80, 80, 5)
-monster3 = Enemy('sangeilii.png', win_width - 80, 0, 80, 80, 5)
-monster4 = Enemy('sangeilii.png', win_width - 80, 450, 80, 80, 5)
+monster1 = Enemy('enemigoo.png', win_width - 80, 40, 80, 80, 5)
+monster2 = Enemy('enemigoo.png', win_width - 80, 400, 80, 80, 5)
+monster3 = Enemy('enemigoo.png', win_width - 80, 0, 80, 80, 5)
+monster4 = Enemy('enemigoo.png', win_width - 80, 450, 80, 80, 5)
 
 monsters.add(monster1)
 monsters.add(monster2)
