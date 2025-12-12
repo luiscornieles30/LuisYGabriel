@@ -1,6 +1,10 @@
 from PyQt5.QtWidgets import QDialog, QPushButton, QVBoxLayout
 
+<<<<<<< HEAD
 class xdd(QDialog):
+=======
+class VentanaVolumen(QDialog):
+>>>>>>> fc736ebc9b2e5fdb8dbe384c525937e5292855fc
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Volumen")
@@ -13,3 +17,7 @@ class xdd(QDialog):
         self.setLayout(layout)
 
         boton_volver.clicked.connect(self.reject)
+<<<<<<< HEAD
+=======
+
+>>>>>>> fc736ebc9b2e5fdb8dbe384c525937e5292855fc
