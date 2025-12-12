@@ -1,27 +1,15 @@
 from PyQt5.QtWidgets import QDialog, QPushButton, QVBoxLayout
 
-
-
-class VentanaPausa(QDialog):
+class VentanaVolumen(QDialog):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Pausa")
+        self.setWindowTitle("Volumen")
         self.setFixedSize(300, 200)
 
-        boton_continuar = QPushButton("Continuar")
-        boton_idioma = QPushButton("Idioma")
-        boton_volumen = QPushButton("Volumen")
-        boton_salir = QPushButton("Salir")
+        boton_volver = QPushButton("Volver")
 
         layout = QVBoxLayout()
-        layout.addWidget(boton_continuar)
-        layout.addWidget(boton_salir)
-        layout.addWidget(boton_idioma)
-        layout.addWidget(boton_volumen)
-
+        layout.addWidget(boton_volver)
         self.setLayout(layout)
 
-        boton_continuar.clicked.connect(self.accept)
-        boton_idioma.clicked.connect(self.accept)
-        boton_volumen.clicked.connect(self.accept)
-        boton_salir.clicked.connect(self.reject)
+        boton_volver.clicked.connect(self.reject)
