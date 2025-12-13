@@ -241,8 +241,13 @@ while run:
                 window.blit(transform.scale(img, (win_height * d, win_height)), (90, 0))
 
             if sprite.collide_rect(packman, final_sprite):
-                display.update()
-
+                    finish = True
+                    img = image.load('victoria.png')
+                    mixer.music.load("Capricho corso.mp3")
+                    mixer.music.play(loops=-1)
+                    d = img.get_width() // img.get_height()
+                    window.fill((255, 255, 255))
+                    window.blit(transform.scale(img, (win_height * d, win_height)), (90, 0))
 
             tiempo_transcurrido = time.get_ticks()
             if tiempo_transcurrido - ultimo_disparo > delay_para_disparar:

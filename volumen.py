@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QDialog, QPushButton, QVBoxLayout, QSlider
 from PyQt5.QtCore import Qt
 from pygame import mixer
+from PyQt5.QtGui import QIcon
 idioma_actual = "es"
 
 
@@ -10,6 +11,9 @@ class Volumen(QDialog):
         super().__init__()
         self.setWindowTitle("Volumen")
         self.setFixedSize(300, 200)
+        self.setWindowIcon(QIcon("alfin.bmp"))
+        self.setStyleSheet("background-color:#1f3b5b; color:white;")
+
 
         self.slider = QSlider(Qt.Horizontal)
         self.slider.setMinimum(0)
@@ -17,6 +21,7 @@ class Volumen(QDialog):
         self.slider.setValue(int(mixer.music.get_volume() * 200))
 
         self.boton_volver = QPushButton()
+        self.boton_volver.setStyleSheet("font-family:Verdana; background-color:#163355; color:white; padding:6px;")
 
         layout = QVBoxLayout()
         layout.addWidget(self.slider)
@@ -46,12 +51,19 @@ class Idioma(QDialog):
         super().__init__()
         self.setWindowTitle("Idioma")
         self.setFixedSize(300, 200)
+        self.setWindowIcon(QIcon("alfin.bmp"))
+        self.setStyleSheet("background-color:#1f3b5b; color:white;")
 
         boton_es = QPushButton("Español")
         boton_en = QPushButton("English")
         boton_ru = QPushButton("русский")
         boton_ch = QPushButton("傳統中文")
         boton_volver = QPushButton("Volver")
+        boton_es.setStyleSheet("font-family:Verdana; background-color:#163355; color:white; padding:6px;")
+        boton_en.setStyleSheet("font-family:Verdana; background-color:#163355; color:white; padding:6px;")
+        boton_ru.setStyleSheet("font-family:Verdana; background-color:#163355; color:white; padding:6px;")
+        boton_ch.setStyleSheet("font-family:Verdana; background-color:#163355; color:white; padding:6px;")
+        boton_volver.setStyleSheet("font-family:Verdana; background-color:#163355; color:white; padding:6px;")
 
         layout = QVBoxLayout()
         layout.addWidget(boton_es)

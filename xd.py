@@ -1,12 +1,16 @@
 from PyQt5.QtWidgets import QDialog, QPushButton, QVBoxLayout
 from volumen import *
 import volumen
+from PyQt5.QtGui import QIcon
 
 class VentanaPausa(QDialog):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Pausa")
         self.setFixedSize(300, 200)
+        self.setWindowIcon(QIcon("alfin.bmp"))
+        self.setStyleSheet("background-color:#1f3b5b; color:white;")
+
 
       
         self.boton_continuar = QPushButton()
@@ -20,6 +24,10 @@ class VentanaPausa(QDialog):
         layout.addWidget(self.boton_volumen)
         layout.addWidget(self.boton_salir)
         self.setLayout(layout)
+        self.boton_volumen.setStyleSheet("font-family:Verdana; background-color:#163355; color:white; padding:6px;")
+        self.boton_salir.setStyleSheet("font-family:Verdana; background-color:##163355; color:white; padding:6px;")
+        self.boton_continuar.setStyleSheet("font-family:Verdana; background-color:#163355; color:white; padding:6px;")
+        self.boton_idioma.setStyleSheet("font-family:Verdana; background-color:#163355; color:white; padding:6px;")
 
      
         self.boton_continuar.clicked.connect(self.continuar)
