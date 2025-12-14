@@ -9,7 +9,7 @@ mixer.init()
 
 
 
-mixer.init()
+
 
 #clase padre para otros sprites
 class GameSprite(sprite.Sprite):
@@ -65,7 +65,7 @@ class Player(GameSprite):
           self.walkcount += 0.8
  def fire(self):
      sound = mixer.Sound("laser-gun-81720.mp3")
-     sound.set_volume(0.3)
+     sound.set_volume(mixer.music.get_volume()/2)
      sound.play()
      bullet = Bullet('bala.png', self.rect.right, self.rect.centery, 60, 35, 55)
      hero_bullets.add(bullet)
@@ -88,7 +88,7 @@ class Enemy(GameSprite):
             self.rect.y -= self.speed
 
     def enemyfire(self):
-        bullet = Bullet('bala.png', self.rect.left, self.rect.centery, 35, 40, -15)
+        bullet = Bullet('bala.png', self.rect.left, self.rect.centery, 35, 40, 7)
         enemy_bullets.add(bullet)
 
 
@@ -96,11 +96,62 @@ class Bullet(GameSprite):
     def __init__(self, player_image, player_x, player_y, size_x, size_y, player_speed):
         GameSprite.__init__(self, player_image, player_x, player_y, size_x, size_y)
         self.speed = player_speed
+        self.x = player_x
+    
+    def chase(self, target):
+        target_vector = math.Vector2(target.rect.centerx, target.rect.centery)
+        follower_vector = math.Vector2(self.rect.centerx, self.rect.centery)
+        direction_to_target = target_vector - follower_vector
+        distance = direction_to_target.length()
+        if distance > 0:
+            direction_vector = direction_to_target.normalize()
+            step_vector = direction_vector * self.speed
+            if step_vector.length() > distance:
+                step_vector = direction_to_target 
+            new_follower_vector = follower_vector + step_vector
+            return [new_follower_vector.x, new_follower_vector.y]
+        else:
+            return [follower_vector.x, follower_vector.y]
 
-    def update(self):
-        self.rect.x += self.speed
+    def update(self, target):
+        if self in enemy_bullets:
+            new_pos = self.chase(target) 
+            self.rect.centerx = new_pos[0] 
+            self.rect.centery = new_pos[1]
+        else:
+            self.rect.x += self.speed
         if self.rect.x > win_width + 10:
             self.kill()
+
+def reset_game():
+    global finish, pausa, game_outcome, ultimo_disparo, current_finish_img, img_switch_delay, last_img_switch
+
+    finish = False
+    pausa = False
+    win_state = None
+    ultimo_disparo = 0
+    current_finish_img = 1
+    last_img_switch = time.get_ticks()
+
+    packman.rect.x = 46
+    packman.rect.y = 370
+    packman.x_speed = 0
+    packman.y_speed = 0
+
+    hero_bullets.empty()
+    enemy_bullets.empty()
+    monsters.empty()
+
+    global monster1, monster2, monster3, monster4
+    monster1 = Enemy('enemigoo.png', win_width - 80, 40, 80, 80, 5)
+    monster2 = Enemy('enemigoo.png', win_width - 80, 400, 80, 80, 5)
+    monster3 = Enemy('enemigoo.png', win_width - 80, 0, 80, 80, 5)
+    monster4 = Enemy('enemigoo.png', win_width - 80, 450, 80, 80, 5)
+
+    monsters.add(monster1, monster2, monster3, monster4)
+    
+    mixer.music.load("Take a no. 5 and a no. 3.mp3")
+    mixer.music.play(loops=-1)
 
 
 win_width = 700
@@ -142,6 +193,12 @@ escena = False
 finish = False
 pausa = False  
 
+current_finish_img = 1
+finish_screen_image = None
+win_state = None
+last_img_switch = time.get_ticks()
+img_switch_delay = 500
+
 
 mixer.music.load("Take a no. 5 and a no. 3.mp3")
 mixer.music.play(loops=-1)
@@ -166,7 +223,10 @@ while run:
             elif e.key == K_DOWN:
                 packman.y_speed = 5
             elif e.key == K_SPACE:
-                packman.fire()
+                if finish != False and win_state != None:
+                    reset_game()
+                elif not finish:
+                    packman.fire()
 
             elif e.key == K_ESCAPE:  
                 if pausa == False:
@@ -207,8 +267,8 @@ while run:
             window.blit(img, (0, 0))
 
             packman.update(window)
-            hero_bullets.update()
-            enemy_bullets.update()
+            hero_bullets.update(packman)
+            enemy_bullets.update(packman)
 
             packman.reset()
             hero_bullets.draw(window)
@@ -221,33 +281,26 @@ while run:
 
             monsters.update()
             monsters.draw(window)
-
+            
             if sprite.spritecollide(packman, enemy_bullets, True):
                 finish = True
-                img = image.load('derrota.png')
-                d = img.get_width() // img.get_height()
+                win_state = 'loss'
                 mixer.music.load("Capricho corso.mp3")
                 mixer.music.play(loops=-1)
-                window.fill((255, 255, 255))
-                window.blit(transform.scale(img, (win_height * d, win_height)), (90, 0))
+            
 
             if sprite.spritecollide(packman, monsters, False):
                 finish = True
-                img = image.load('derrota.png')
+                win_state = 'loss' 
                 mixer.music.load("Capricho corso.mp3")
                 mixer.music.play(loops=-1)
-                d = img.get_width() // img.get_height()
-                window.fill((255, 255, 255))
-                window.blit(transform.scale(img, (win_height * d, win_height)), (90, 0))
+
 
             if sprite.collide_rect(packman, final_sprite):
-                    finish = True
-                    img = image.load('victoria.png')
-                    mixer.music.load("Capricho corso.mp3")
-                    mixer.music.play(loops=-1)
-                    d = img.get_width() // img.get_height()
-                    window.fill((255, 255, 255))
-                    window.blit(transform.scale(img, (win_height * d, win_height)), (90, 0))
+                finish = True
+                win_state = 'win' 
+                mixer.music.load("Capricho corso.mp3")
+                mixer.music.play(loops=-1)
 
             tiempo_transcurrido = time.get_ticks()
             if tiempo_transcurrido - ultimo_disparo > delay_para_disparar:
@@ -256,6 +309,32 @@ while run:
                 if monster2.alive():
                     monster2.enemyfire()
                 ultimo_disparo = tiempo_transcurrido
+    else:
+        now = time.get_ticks()
+        
+
+        if now - last_img_switch > img_switch_delay:
+            current_finish_img = 3 - current_finish_img
+            last_img_switch = now
+
+        if win_state == 'loss':
+            if current_finish_img == 1:
+                img_file = 'derrota.png'
+            else:
+                img_file = 'derrota1.png'
+        elif win_state == 'win':
+            if current_finish_img == 1:
+                img_file = 'victoria.png'
+            else:
+                img_file = 'victoria1.png'
+        else:
+            img_file = 'fondo.png' 
+
+        finish_screen_image = image.load(img_file)
+        
+        d = finish_screen_image.get_width() // finish_screen_image.get_height()
+        window.fill((255, 255, 255))
+        window.blit(transform.scale(finish_screen_image, (win_height * d, win_height)), (90, 0))
     
     display.update()
 
