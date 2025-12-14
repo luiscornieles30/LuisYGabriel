@@ -67,14 +67,15 @@ class Player(GameSprite):
      sound = mixer.Sound("laser-gun-81720.mp3")
      sound.set_volume(mixer.music.get_volume()/2)
      sound.play()
-     bullet = Bullet('bala.png', self.rect.right, self.rect.centery, 60, 35, 55)
+     bullet = Bullet('bala.png', None, None, None, self.rect.right, self.rect.centery, 60, 35, 55)
      hero_bullets.add(bullet)
 
 
 class Enemy(GameSprite):
     side = "left"
-    def __init__(self, player_image, player_x, player_y, size_x, size_y, player_speed):
+    def __init__(self, player_image, health, player_x, player_y, size_x, size_y, player_speed):
         GameSprite.__init__(self, player_image, player_x, player_y, size_x, size_y)
+        self.health = health
         self.speed = player_speed
 
     def update(self):
@@ -86,15 +87,20 @@ class Enemy(GameSprite):
             self.side = "arriba"
         if self.side == "arriba":
             self.rect.y -= self.speed
+        if self.health == 0:
+            self.kill()
 
     def enemyfire(self):
-        bullet = Bullet('bala.png', self.rect.left, self.rect.centery, 35, 40, 10)
+        bullet = Bullet('bala.png', 2500, None, time.get_ticks(), self.rect.left, self.rect.centery, 35, 40, 8)
         enemy_bullets.add(bullet)
 
 
 class Bullet(GameSprite):
-    def __init__(self, player_image, player_x, player_y, size_x, size_y, player_speed):
+    def __init__(self, player_image, tracking_duration, direction, creation_time, player_x, player_y, size_x, size_y, player_speed):
         GameSprite.__init__(self, player_image, player_x, player_y, size_x, size_y)
+        self.tracking_duration = tracking_duration
+        self.direction = direction
+        self.creation_time = creation_time
         self.speed = player_speed
         self.x = player_x
     
@@ -115,16 +121,24 @@ class Bullet(GameSprite):
 
     def update(self, target):
         if self in enemy_bullets:
-            new_pos = self.chase(target) 
-            self.rect.centerx = new_pos[0] 
-            self.rect.centery = new_pos[1]
+            current_time = time.get_ticks()
+            time_elapsed = current_time - self.creation_time
+            is_tracking = time_elapsed < self.tracking_duration
+            if is_tracking == True:
+                new_pos = self.chase(target) 
+                self.rect.centerx = new_pos[0] 
+                self.rect.centery = new_pos[1]
+                if time_elapsed + (1000 / 60) >= self.tracking_duration:
+                    self.direction = new_pos
+            else:
+                self.rect.x -= self.speed
         else:
             self.rect.x += self.speed
         if self.rect.x > win_width + 10:
             self.kill()
 
 def reset_game():
-    global finish, pausa, game_outcome, ultimo_disparo, current_finish_img, img_switch_delay, last_img_switch
+    global finish, pausa, win_state, ultimo_disparo, current_finish_img, img_switch_delay, last_img_switch
 
     finish = False
     pausa = False
@@ -143,10 +157,10 @@ def reset_game():
     monsters.empty()
 
     global monster1, monster2, monster3, monster4
-    monster1 = Enemy('enemigoo.png', win_width - 80, 40, 80, 80, 5)
-    monster2 = Enemy('enemigoo.png', win_width - 80, 400, 80, 80, 5)
-    monster3 = Enemy('enemigoo.png', win_width - 80, 0, 80, 80, 5)
-    monster4 = Enemy('enemigoo.png', win_width - 80, 450, 80, 80, 5)
+    monster1 = Enemy('enemigoo.png', 3, win_width - 80, 40, 80, 80, 5)
+    monster2 = Enemy('enemigoo.png', 3, win_width - 80, 400, 80, 80, 5)
+    monster3 = Enemy('enemigoo.png', 3, win_width - 80, 0, 80, 80, 5)
+    monster4 = Enemy('enemigoo.png', 3, win_width - 80, 450, 80, 80, 5)
 
     monsters.add(monster1, monster2, monster3, monster4)
     
@@ -179,10 +193,10 @@ walk = [
 packman = Player('frame1.png', walk, 0, 46, 370, 80, 80, 0, 0)
 final_sprite = GameSprite('fin.png', win_width - 85, win_height - 100, 80, 80)
 
-monster1 = Enemy('enemigoo.png', win_width - 80, 40, 80, 80, 5)
-monster2 = Enemy('enemigoo.png', win_width - 80, 400, 80, 80, 5)
-monster3 = Enemy('enemigoo.png', win_width - 80, 0, 80, 80, 5)
-monster4 = Enemy('enemigoo.png', win_width - 80, 450, 80, 80, 5)
+monster1 = Enemy('enemigoo.png', 3, win_width - 80, 40, 80, 80, 5)
+monster2 = Enemy('enemigoo.png', 3, win_width - 80, 400, 80, 80, 5)
+monster3 = Enemy('enemigoo.png', 3, win_width - 80, 0, 80, 80, 5)
+monster4 = Enemy('enemigoo.png', 3, win_width - 80, 450, 80, 80, 5)
 
 monsters.add(monster1)
 monsters.add(monster2)
@@ -215,13 +229,13 @@ while run:
 
         elif e.type == KEYDOWN:
             if e.key == K_LEFT:
-                packman.x_speed = -5
+                packman.x_speed = -7
             elif e.key == K_RIGHT:
-                packman.x_speed = 5
+                packman.x_speed = 7
             elif e.key == K_UP:
-                packman.y_speed = -5
+                packman.y_speed = -7
             elif e.key == K_DOWN:
-                packman.y_speed = 5
+                packman.y_speed = 7
             elif e.key == K_SPACE:
                 if finish != False and win_state != None:
                     reset_game()
@@ -276,8 +290,12 @@ while run:
             barriers.draw(window)
             final_sprite.reset()
 
-            sprite.groupcollide(monsters, hero_bullets, True, True)
             sprite.groupcollide(enemy_bullets, barriers, False, False)
+
+            for i in monsters:
+                if sprite.spritecollide(i, hero_bullets, False):
+                    sprite.groupcollide(monsters, hero_bullets, False, True)
+                    i.health -= 1
 
             monsters.update()
             monsters.draw(window)
