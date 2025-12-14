@@ -88,7 +88,7 @@ class Enemy(GameSprite):
             self.rect.y -= self.speed
 
     def enemyfire(self):
-        bullet = Bullet('bala.png', self.rect.left, self.rect.centery, 35, 40, 7)
+        bullet = Bullet('bala.png', self.rect.left, self.rect.centery, 35, 40, 10)
         enemy_bullets.add(bullet)
 
 
