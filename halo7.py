@@ -79,7 +79,7 @@ class Enemy(GameSprite):
         self.speed = player_speed
 
     def update(self):
-        if self.rect.y <= 50:
+        if self.rect.y <= 50 and self.rect.x >= 50:
             self.side = "abajo"
         if self.side == "abajo":
             self.rect.y += self.speed
@@ -91,7 +91,7 @@ class Enemy(GameSprite):
             self.kill()
 
     def enemyfire(self):
-        bullet = Bullet('bala.png', 2500, None, time.get_ticks(), self.rect.left, self.rect.centery, 35, 40, 8)
+        bullet = Bullet('misil.png', 2500, None, time.get_ticks(), self.rect.left, self.rect.centery, 35, 40, 8)
         enemy_bullets.add(bullet)
 
 
