@@ -1,7 +1,6 @@
 from pygame import *
 from xd import *
 from PyQt5.QtWidgets import QApplication
-from random import *
 
 app_qt = QApplication([])
 
@@ -194,7 +193,6 @@ walk = [
 packman = Player('frame1.png', walk, 0, 46, 370, 80, 80, 0, 0)
 final_sprite = GameSprite('fin.png', win_width - 85, win_height - 100, 80, 80)
 
-numero_uniforme = random.uniform(10.5, 20.5)
 monster1 = Enemy('enemigoo.png', 3, win_width - 80, 40, 80, 80, 5)
 monster2 = Enemy('enemigoo.png', 3, win_width - 80, 400, 80, 80, 5)
 monster3 = Enemy('enemigoo.png', 3, win_width - 80, 0, 80, 80, 5)
