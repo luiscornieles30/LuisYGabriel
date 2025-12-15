@@ -339,12 +339,27 @@ while run:
             if current_finish_img == 1:
                 img_file = 'derrota.png'
             else:
-                img_file = 'derrota1.png'
+                if volumen.idioma_actual == 'es':
+                    img_file = 'derrotaes.png'
+                elif volumen.idioma_actual == 'ru':
+                    img_file = 'derrotaru.png'
+                elif volumen.idioma_actual == 'ch':
+                    img_file = 'derrotach.png'
+                else:
+                    img_file = 'derrotaen.png'
+
         elif win_state == 'win':
             if current_finish_img == 1:
                 img_file = 'victoria.png'
             else:
-                img_file = 'victoria1.png'
+                if volumen.idioma_actual == 'es':
+                    img_file = 'victoriaes.png'
+                elif volumen.idioma_actual == 'ru':
+                    img_file = 'victoriaru.png'
+                elif volumen.idioma_actual == 'ch':
+                    img_file = 'victoriach.png'
+                else:
+                    img_file = 'victoriaen.png'
         else:
             img_file = 'fondo.png' 
 
